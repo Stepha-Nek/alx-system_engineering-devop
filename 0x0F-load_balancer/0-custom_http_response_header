@@ -1,0 +1,27 @@
+#!usr/bin/env bash
+# configuring web server 01 to have HTTP response server
+
+# updating packages 
+sudo apt-get update
+sudo apt-get install -y nginx
+
+# customise web server 2 to become like web server 1
+echo "Hello World!" | sudo tee /var/www/html/index.html
+
+# performing redirection
+new_string="server_name _;\n\trewrite ^/redirect_me https://github.com/Stepha-Nek permanent;"
+sudo sed -i "s|server_name _;|$new_string|" /etc/nginx/sites-enabled/default
+
+# creating a 404 custom error page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+new_string="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+
+# custom http response
+# custom HTTP server header to find out which server is giving us information
+sudo sed -i "/server_name _/a add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
+
+# test for syntax errors
+sudo nginx -t
+
+# restart after making changes
+sudo service nginx restart

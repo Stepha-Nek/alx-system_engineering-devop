@@ -1,4 +1,4 @@
-#!usr/bin/env bash
+#!/usr/bin/env bash
 # configuring web server 01 to have HTTP response server
 
 # updating packages 
